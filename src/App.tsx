@@ -4,6 +4,7 @@ import { fetchQuizQuestions } from './API';
 import QuestionCard from './components/QuestionCard';
 // Types
 import { QuestionState, Difficulty } from './API';
+import { isConstructorDeclaration } from 'typescript';
 
 type AnswerObject = {
   question: string;
@@ -22,9 +23,6 @@ const App = () => {
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(true);
 
-    console.log(fetchQuizQuestions(TOTAL_QUESTIONS, Difficulty.EASY));
-
-  
     const startTrivia = async () => {
       setLoading(true);
       setGameOver(false);
@@ -49,11 +47,13 @@ const App = () => {
     return (
     <div className="App">
       <h1>REACT QUIZ</h1>
-      <button className="start" onClick={startTrivia}>
-        Start
-      </button>
-      <p className="score">Score:</p>
-      <p>Loading Questions ...</p>
+      {gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
+        <button className="start" onClick={startTrivia}>
+          Start
+        </button>
+      ) : null}
+      {!gameOver ? <p className="score">Score:</p> : null}
+      {loading && <p>Loading Questions ...</p>}
       {/* <QuestionCard 
         questionNr={number + 1}
         totalQuestions={TOTAL_QUESTIONS}
