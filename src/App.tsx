@@ -40,9 +40,35 @@ const App = () => {
 
     };
 
-    const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {};
+    const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!gameOver) {
+        // Users answer
+        const answer = e.currentTarget.value;
+        // Check answer against correct answer
+        const correct = questions[number].correct_answer === answer;
+        // Add score if answer is correct
+        if (correct) setScore(prev => prev + 1);
+        // Save answer in the array for user answers
+        const answerObject = {
+          question: questions[number].question,
+          answer,
+          correct,
+          correctAnswer: questions[number].correct_answer,
+        };
+        setUserAnswers((prev) => [...prev, answerObject]);
+      }
+    };
 
-    const nextQuestion = () => {};
+    const nextQuestion = () => {
+      // Move on to the next question if it is not the last questions
+      const nextQuestion = number + 1;
+
+      if (nextQuestion === TOTAL_QUESTIONS) {
+        setGameOver(true);
+      } else {
+        setNumber(nextQuestion);
+      }
+    };
 
     return (
     <div className="App">
@@ -54,19 +80,26 @@ const App = () => {
       ) : null}
       {!gameOver ? <p className="score">Score:</p> : null}
       {loading && <p>Loading Questions ...</p>}
-      {/* <QuestionCard 
-        questionNr={number + 1}
-        totalQuestions={TOTAL_QUESTIONS}
-        question={questions[number].question}
-        answers={questions[number].answers}
-        userAnswer={userAnswers ? userAnswers[number] : undefined}
-        callback={checkAnswer}
-      /> */}
-      <button className="next" onClick={nextQuestion}>
-        Next Question
-      </button>
+      {!loading && !gameOver && (
+        <QuestionCard 
+          questionNr={number + 1}
+          totalQuestions={TOTAL_QUESTIONS}
+          question={questions[number].question}
+          answers={questions[number].answers}
+          userAnswer={userAnswers ? userAnswers[number] : undefined}
+          callback={checkAnswer}
+        />
+      )}
+      {!gameOver &&
+      !loading && 
+      userAnswers.length === number + 1 &&
+      number !== TOTAL_QUESTIONS - 1 ? (
+        <button className="next" onClick={nextQuestion}>
+          Next Question
+        </button>
+      ) : null}
     </div>
-    )
+    );
 };
 
 
